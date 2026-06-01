@@ -18,7 +18,7 @@ const NAV_ITEMS: { id: Page; label: string; icon: string }[] = [
 
 export default function App() {
   const [page, setPage] = useState<Page>("overview");
-  const { connected, telemetry, incidents, agentLogs, actionResults, codePatch, requestTelemetry } = useSocket();
+  const { connected, telemetry, incidents, agentLogs, actionResults, codePatch, requestTelemetry, refreshIncidents } = useSocket();
 
   const openP1 = incidents.filter((i) => i.severity === "p1" && (i.status === "open" || i.status === "investigating")).length;
 
@@ -28,17 +28,19 @@ export default function App() {
       <header className="sre-topbar">
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <div style={{
-            width: 28, height: 28,
-            background: "var(--sre-accent)",
-            borderRadius: 6,
+            width: 32, height: 32,
+            background: "var(--sre-gradient)",
+            borderRadius: "var(--radius-md)",
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 14, fontWeight: 800, color: "white",
-          }}>S</div>
+            fontSize: 15, fontWeight: 800, color: "white",
+            boxShadow: "0 2px 8px rgba(239,68,68,0.35)",
+            letterSpacing: "-0.5px",
+          }}>OB</div>
           <div>
-            <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "var(--text-primary)" }}>
-              OfferBerries SRE
+            <div style={{ fontSize: "var(--text-md)", fontWeight: 600, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+              OfferBerries <span style={{ color: "var(--sre-accent)" }}>SRE</span>
             </div>
-            <div style={{ fontSize: "0.625rem", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.06em" }}>
+            <div style={{ fontSize: "var(--text-2xs)", color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.08em" }}>
               Command Center
             </div>
           </div>
@@ -132,7 +134,7 @@ export default function App() {
       {/* ── Main content ────────────────────────────────────────────────── */}
       <main className="sre-main">
         {page === "overview" && <Overview telemetry={telemetry} incidents={incidents} connected={connected} />}
-        {page === "incidents" && <Incidents incidents={incidents} />}
+        {page === "incidents" && <Incidents incidents={incidents} onRefresh={refreshIncidents} />}
         {page === "terminal" && <Terminal logs={agentLogs} codePatch={codePatch} />}
         {page === "settings" && <Settings />}
         {page === "actions" && (

@@ -4,7 +4,7 @@ import type { Incident } from "../hooks/useSocket";
 
 const SRE_URL = import.meta.env.VITE_SRE_URL ?? "http://localhost:3500";
 
-interface Props { incidents: Incident[] }
+interface Props { incidents: Incident[]; onRefresh?: () => void }
 
 function SeverityBadge({ severity }: { severity: string }) {
   return <span className={`badge badge-${severity}`}>{severity.toUpperCase()}</span>;
@@ -23,7 +23,7 @@ function mttrLabel(secs: number | null): string {
   return `${Math.round(secs / 60)}m ${secs % 60}s`;
 }
 
-export function Incidents({ incidents }: Props) {
+export function Incidents({ incidents, onRefresh }: Props) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [selected, setSelected]         = useState<Incident | null>(null);
   const [authorizing, setAuthorizing]   = useState<string | null>(null);
@@ -41,6 +41,7 @@ export function Incidents({ incidents }: Props) {
     try {
       await axios.post(`${SRE_URL}/api/incidents/${incidentId}/authorize`, { cmd });
       setFeedback({ id: incidentId, msg: cmd === "FIX" ? "Action executed" : cmd === "IGNORE" ? "Incident closed" : "Incident escalated", ok: true });
+      setTimeout(() => onRefresh?.(), 1500);
     } catch (err: any) {
       setFeedback({ id: incidentId, msg: err.response?.data?.error ?? "Request failed", ok: false });
     } finally {

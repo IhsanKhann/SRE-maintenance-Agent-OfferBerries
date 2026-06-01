@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { io, Socket } from "socket.io-client";
+import axios from "axios";
 
 const SRE_URL = import.meta.env.VITE_SRE_URL ?? "http://localhost:3500";
 
@@ -65,25 +66,39 @@ export interface Incident {
 
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
-  const [connected, setConnected] = useState(false);
-  const [telemetry, setTelemetry] = useState<TelemetrySnapshot | null>(null);
-  const [incidents, setIncidents] = useState<Incident[]>([]);
-  const [agentLogs, setAgentLogs] = useState<AgentLogEntry[]>([]);
+  const [connected, setConnected]       = useState(false);
+  const [telemetry, setTelemetry]       = useState<TelemetrySnapshot | null>(null);
+  const [incidents, setIncidents]       = useState<Incident[]>([]);
+  const [agentLogs, setAgentLogs]       = useState<AgentLogEntry[]>([]);
   const [actionResults, setActionResults] = useState<unknown[]>([]);
-  const [codePatch, setCodePatch] = useState<unknown | null>(null);
+  const [codePatch, setCodePatch]       = useState<unknown | null>(null);
 
+  // ── Hydrate existing data from REST on mount ──────────────────────────────
+  useEffect(() => {
+    Promise.all([
+      axios.get<{ success: boolean; data: Incident[] }>(`${SRE_URL}/api/incidents`),
+      axios.get<{ success: boolean; data: TelemetrySnapshot | null }>(`${SRE_URL}/api/telemetry/latest`),
+    ]).then(([incRes, telRes]) => {
+      if (incRes.data.success) setIncidents(incRes.data.data);
+      if (telRes.data.success && telRes.data.data) setTelemetry(telRes.data.data);
+    }).catch(() => {
+      // Backend not yet running — socket will bring data when ready
+    });
+  }, []);
+
+  // ── WebSocket connection ──────────────────────────────────────────────────
   useEffect(() => {
     const token = localStorage.getItem("sre_token");
     const socket = io(SRE_URL, {
       auth: token ? { token } : {},
       transports: ["websocket", "polling"],
-      reconnectionAttempts: 5,
+      reconnectionAttempts: 10,
       reconnectionDelay: 2000,
     });
 
     socketRef.current = socket;
 
-    socket.on("connect", () => setConnected(true));
+    socket.on("connect",    () => setConnected(true));
     socket.on("disconnect", () => setConnected(false));
 
     socket.on("telemetry:update", (data: TelemetrySnapshot) => {
@@ -97,7 +112,7 @@ export function useSocket() {
     socket.on("incident:closed", (data: { id: string; resolvedBy: string }) => {
       setIncidents((prev) =>
         prev.map((i) =>
-          i._id === data.id ? { ...i, status: "resolved", resolvedBy: data.resolvedBy } : i
+          i._id === data.id ? { ...i, status: "resolved" as const, resolvedBy: data.resolvedBy } : i
         )
       );
     });
@@ -121,5 +136,13 @@ export function useSocket() {
     socketRef.current?.emit("request:telemetry");
   }, []);
 
-  return { connected, telemetry, incidents, agentLogs, actionResults, codePatch, requestTelemetry };
+  // Optimistically refresh incidents from REST (e.g. after an action)
+  const refreshIncidents = useCallback(async () => {
+    try {
+      const res = await axios.get<{ success: boolean; data: Incident[] }>(`${SRE_URL}/api/incidents`);
+      if (res.data.success) setIncidents(res.data.data);
+    } catch { /* ignore */ }
+  }, []);
+
+  return { connected, telemetry, incidents, agentLogs, actionResults, codePatch, requestTelemetry, refreshIncidents };
 }

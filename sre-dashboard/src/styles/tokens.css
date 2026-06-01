@@ -1,70 +1,224 @@
-/* SRE Dashboard — Design Tokens
-   Mirrors OfferBerries ERP tokens.css for visual consistency.
-   Source: D:\Backend-offerB\frontend\src\styles\tokens.css
-*/
+/* ============================================================
+   OfferBerries SRE Dashboard — Design Tokens
+   Sourced directly from D:/Backend-offerB/frontend/src/styles/tokens.css
+   SRE-specific additions appended at the bottom.
+   ============================================================ */
 
+/* ─────────────────────────────────────────────────────────────
+   LIGHT MODE (default)
+───────────────────────────────────────────────────────────── */
 :root {
-  /* ── Accent Colors (matches main ERP) ──────────────────────────────────── */
-  --hr-accent:     #6366f1;   /* indigo  */
-  --fin-accent:    #10b981;   /* emerald */
-  --ops-accent:    #f59e0b;   /* amber   */
-  --gov-accent:    #8b5cf6;   /* violet  */
-  --sre-accent:    #ef4444;   /* red — SRE-specific */
-  --sre-accent-dim: #7f1d1d;
 
-  /* ── Severity Colors ──────────────────────────────────────────────────── */
-  --p1-color:      #ef4444;
-  --p1-bg:         rgba(239, 68, 68, 0.1);
-  --p2-color:      #f59e0b;
-  --p2-bg:         rgba(245, 158, 11, 0.1);
-  --p3-color:      #6366f1;
-  --p3-bg:         rgba(99, 102, 241, 0.1);
-  --ok-color:      #10b981;
-  --ok-bg:         rgba(16, 185, 129, 0.1);
+  /* ── Surfaces ──────────────────────────────────────────── */
+  --bg-canvas:          #FFFFFF;
+  --bg-page:            #F1F5F9;
+  --bg-subtle:          #E2E8F0;
+  --bg-muted:           #CBD5E1;
+  --bg-overlay:         rgba(15,23,42,0.6);
 
-  /* ── Background Layers (dark mode) ────────────────────────────────────── */
-  --bg-canvas:     #0a0a0f;
-  --bg-surface:    #111118;
-  --bg-elevated:   #1a1a24;
-  --bg-hover:      #22222f;
+  /* ── Sidebar — ALWAYS DARK ──────────────────────────────── */
+  --sidebar-bg:         #0F172A;
+  --sidebar-border:     rgba(255,255,255,0.08);
+  --sidebar-text:       #94A3B8;
+  --sidebar-text-hover: #CBD5E1;
+  --sidebar-text-active:#FFFFFF;
+  --sidebar-active-bg:  rgba(239,68,68,0.2);
+  --sidebar-active-bar: #ef4444;
+  --sidebar-section:    #475569;
+  --sidebar-width:      220px;
+  --sidebar-collapsed:  56px;
 
-  /* ── Text ─────────────────────────────────────────────────────────────── */
-  --text-primary:  #f1f1f5;
-  --text-secondary:#9ca3af;
-  --text-muted:    #6b7280;
-  --text-dim:      #374151;
+  /* ── Topbar ─────────────────────────────────────────────── */
+  --topbar-bg:          #FFFFFF;
+  --topbar-border:      #CBD5E1;
+  --topbar-height:      56px;
 
-  /* ── Borders ──────────────────────────────────────────────────────────── */
-  --border-subtle: rgba(255, 255, 255, 0.06);
-  --border-default:rgba(255, 255, 255, 0.10);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  /* ── Borders ────────────────────────────────────────────── */
+  --border-subtle:      #E2E8F0;
+  --border-default:     #CBD5E1;
+  --border-strong:      #94A3B8;
+  --border-focus:       #ef4444;
+  --border-focus-danger:#EF4444;
 
-  /* ── Status indicator dots ────────────────────────────────────────────── */
-  --dot-green:    #10b981;
-  --dot-red:      #ef4444;
-  --dot-yellow:   #f59e0b;
-  --dot-gray:     #6b7280;
+  /* ── Text ───────────────────────────────────────────────── */
+  --text-primary:       #020617;
+  --text-secondary:     #1E293B;
+  --text-muted:         #475569;
+  --text-placeholder:   #94A3B8;
+  --text-inverse:       #F8FAFC;
+  --text-link:          #ef4444;
+  --text-dim:           #94A3B8;
 
-  /* ── Typography ───────────────────────────────────────────────────────── */
-  --font-mono:   "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
-  --font-sans:   "Inter", system-ui, -apple-system, sans-serif;
+  /* ── HR Module ─────────────────────────────────────────── */
+  --hr-from:            #4F46E5; --hr-to:   #7C3AED;
+  --hr-gradient:        linear-gradient(135deg, #4F46E5, #7C3AED);
+  --hr-bg:              #EEF2FF; --hr-bg-hover: #E0E7FF;
+  --hr-text:            #3730A3; --hr-text-muted: #4F46E5;
+  --hr-border:          #A5B4FC; --hr-accent: #6366F1;
 
-  /* ── Spacing ──────────────────────────────────────────────────────────── */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
+  /* ── Finance Module ────────────────────────────────────── */
+  --fin-from:           #0EA5E9; --fin-to:  #10B981;
+  --fin-gradient:       linear-gradient(135deg, #0EA5E9, #10B981);
+  --fin-bg:             #F0F9FF; --fin-bg-hover: #E0F2FE;
+  --fin-text:           #0C4A6E; --fin-text-muted: #0284C7;
+  --fin-border:         #7DD3FC; --fin-accent: #0EA5E9;
 
-  /* ── Radius ───────────────────────────────────────────────────────────── */
-  --radius-sm:  6px;
-  --radius-md:  10px;
-  --radius-lg:  14px;
+  /* ── Ops Module ─────────────────────────────────────────── */
+  --ops-from:           #F97316; --ops-to:  #F59E0B;
+  --ops-gradient:       linear-gradient(135deg, #F97316, #F59E0B);
+  --ops-bg:             #FFF7ED; --ops-bg-hover: #FFEDD5;
+  --ops-text:           #9A3412; --ops-text-muted: #EA580C;
+  --ops-border:         #FDBA74; --ops-accent: #F97316;
+
+  /* ── Gov Module ─────────────────────────────────────────── */
+  --gov-from:           #0F172A; --gov-to:  #059669;
+  --gov-gradient:       linear-gradient(135deg, #0F172A, #059669);
+  --gov-bg:             #F8FAFC; --gov-bg-hover: #F1F5F9;
+  --gov-text:           #0F172A; --gov-text-muted: #334155;
+  --gov-border:         #CBD5E1; --gov-accent: #059669;
+
+  /* ── Semantic ───────────────────────────────────────────── */
+  --success:            #059669; --success-bg: #F0FDF4;
+  --success-text:       #166534; --success-border: #BBF7D0;
+  --warning:            #D97706; --warning-bg: #FFFBEB;
+  --warning-text:       #92400E; --warning-border: #FDE68A;
+  --danger:             #DC2626; --danger-bg: #FEF2F2;
+  --danger-text:        #991B1B; --danger-border: #FECACA;
+  --info:               #2563EB; --info-bg: #EFF6FF;
+  --info-text:          #1D4ED8; --info-border: #BFDBFE;
+
+  /* ── Typography ─────────────────────────────────────────── */
+  --font-sans:   'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono:   'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  --font-weight-regular: 400;
+  --font-weight-medium:  500;
+
+  /* ── Type Scale ─────────────────────────────────────────── */
+  --text-2xs: 11px;
+  --text-xs:  12px;
+  --text-sm:  13px;
+  --text-base:14px;
+  --text-md:  15px;
+  --text-lg:  16px;
+  --text-xl:  20px;
+  --text-2xl: 24px;
+  --text-3xl: 28px;
+  --text-display: 32px;
+
+  /* ── Spacing ─────────────────────────────────────────────── */
+  --space-1:  4px;  --space-2:  8px;  --space-3:  12px;
+  --space-4:  16px; --space-5:  20px; --space-6:  24px;
+  --space-7:  28px; --space-8:  32px; --space-10: 40px;
+  --space-12: 48px; --space-16: 64px;
+
+  /* ── Border Radius ──────────────────────────────────────── */
+  --radius-xs:   4px;  --radius-sm:   6px;  --radius-md:  10px;
+  --radius-lg:  14px;  --radius-xl:  18px;  --radius-2xl: 22px;
   --radius-full: 9999px;
 
-  /* ── Transition ───────────────────────────────────────────────────────── */
+  /* ── Shadows ─────────────────────────────────────────────── */
+  --shadow-xs:  0 1px 2px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.03);
+  --shadow-sm:  0 1px 3px rgba(15,23,42,0.04), 0 4px 12px rgba(15,23,42,0.06);
+  --shadow-md:  0 4px 6px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.08);
+  --shadow-lg:  0 8px 16px rgba(15,23,42,0.06), 0 16px 40px rgba(15,23,42,0.10);
+  --shadow-xl:  0 20px 40px rgba(15,23,42,0.12), 0 8px 16px rgba(15,23,42,0.06);
+  --shadow-focus: 0 0 0 3px rgba(239,68,68,0.15);
+
+  /* ── Transitions ─────────────────────────────────────────── */
+  --transition-fast:   120ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base:   200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow:   320ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
   --transition: 150ms ease;
+
+  /* ── Z-index ─────────────────────────────────────────────── */
+  --z-base: 0; --z-raised: 10; --z-dropdown: 100;
+  --z-sticky: 200; --z-overlay: 300; --z-modal: 400;
+  --z-toast: 500; --z-tooltip: 600;
+
+  /* ── SRE-specific extensions ────────────────────────────── */
+  --sre-accent:         #ef4444;
+  --sre-gradient:       linear-gradient(135deg, #ef4444, #dc2626);
+
+  /* Severity */
+  --p1-color:   #ef4444; --p1-bg:   rgba(239,68,68,0.1);
+  --p2-color:   #f59e0b; --p2-bg:   rgba(245,158,11,0.1);
+  --p3-color:   #6366f1; --p3-bg:   rgba(99,102,241,0.1);
+  --ok-color:   #10b981; --ok-bg:   rgba(16,185,129,0.1);
+
+  /* Status dots */
+  --dot-green:  #10b981;
+  --dot-red:    #ef4444;
+  --dot-yellow: #f59e0b;
+  --dot-gray:   #6b7280;
+}
+
+
+/* ─────────────────────────────────────────────────────────────
+   DARK MODE — SRE dashboard is always dark
+───────────────────────────────────────────────────────────── */
+.dark {
+
+  /* ── Surfaces ──────────────────────────────────────────── */
+  --bg-canvas:          #161B28;
+  --bg-page:            #0A0B10;
+  --bg-subtle:          #1E2535;
+  --bg-muted:           #334155;
+  --bg-overlay:         rgba(0,0,0,0.85);
+
+  /* ── Sidebar ─────────────────────────────────────────────── */
+  --sidebar-bg:         #080C14;
+  --sidebar-border:     rgba(255,255,255,0.06);
+  --sidebar-text:       #64748B;
+  --sidebar-text-hover: #94A3B8;
+  --sidebar-active-bg:  rgba(239,68,68,0.15);
+  --sidebar-active-bar: #ef4444;
+
+  /* ── Topbar ─────────────────────────────────────────────── */
+  --topbar-bg:          #161B28;
+  --topbar-border:      #1E2535;
+
+  /* ── Borders ────────────────────────────────────────────── */
+  --border-subtle:      #1E2535;
+  --border-default:     #334155;
+  --border-strong:      #475569;
+
+  /* ── Text ───────────────────────────────────────────────── */
+  --text-primary:       #FFFFFF;
+  --text-secondary:     #F1F5F9;
+  --text-muted:         #94A3B8;
+  --text-placeholder:   #64748B;
+  --text-link:          #f87171;
+  --text-dim:           #374151;
+
+  /* ── Module Surfaces (dark) ─────────────────────────────── */
+  --hr-bg: #1e1b4b; --hr-bg-hover: #2d2870; --hr-text: #A5B4FC; --hr-border: #3730A3;
+  --fin-bg: #0c2a4a; --fin-bg-hover: #0e3a62; --fin-text: #7DD3FC; --fin-border: #0369A1;
+  --ops-bg: #431407; --ops-bg-hover: #5c1d0a; --ops-text: #FDBA74; --ops-border: #C2410C;
+  --gov-bg: #0F172A; --gov-bg-hover: #1E293B; --gov-text: #F1F5F9; --gov-border: #334155;
+
+  /* ── Semantic (dark) ────────────────────────────────────── */
+  --success-bg: #064e3b; --success-text: #6ee7b7; --success-border: #059669;
+  --warning-bg: #451a03; --warning-text: #fcd34d; --warning-border: #d97706;
+  --danger-bg:  #450a0a; --danger-text:  #fca5a5; --danger-border:  #dc2626;
+  --info-bg:    #172554; --info-text:    #93c5fd; --info-border:    #2563eb;
+
+  /* ── Shadows (heavier) ──────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.2), 0 1px 3px rgba(0,0,0,0.15);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2), 0 4px 12px rgba(0,0,0,0.25);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 16px rgba(0,0,0,0.25), 0 16px 40px rgba(0,0,0,0.35);
+  --shadow-xl: 0 20px 40px rgba(0,0,0,0.4), 0 8px 16px rgba(0,0,0,0.25);
+  --shadow-focus: 0 0 0 3px rgba(239,68,68,0.2);
+
+  /* ── SRE severity (same values, kept explicit for clarity) ── */
+  --p1-color: #ef4444; --p1-bg: rgba(239,68,68,0.1);
+  --p2-color: #f59e0b; --p2-bg: rgba(245,158,11,0.1);
+  --p3-color: #818cf8; --p3-bg: rgba(99,102,241,0.12);
+  --ok-color: #34d399; --ok-bg: rgba(16,185,129,0.1);
+
+  --dot-green:  #34d399;
+  --dot-red:    #f87171;
+  --dot-yellow: #fbbf24;
+  --dot-gray:   #6b7280;
 }
