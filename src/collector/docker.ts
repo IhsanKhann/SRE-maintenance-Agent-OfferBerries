@@ -8,10 +8,21 @@ interface DockerMetrics {
   totalRestarts: number;
 }
 
+function hasDockerSocket(): boolean {
+  try {
+    const { existsSync } = require("fs");
+    return existsSync("/var/run/docker.sock");
+  } catch {
+    return false;
+  }
+}
+
 async function runSSHCommand(command: string): Promise<string> {
-  if (cfg.NODE_ENV !== "production") {
+  // Docker socket mounted = same-server deployment, run directly
+  if (cfg.NODE_ENV !== "production" || hasDockerSocket()) {
     return runLocalDockerCommand(command);
   }
+  // Railway / remote = SSH into Hetzner
   return runRemoteCommand(command);
 }
 
