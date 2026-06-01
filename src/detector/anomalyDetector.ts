@@ -118,6 +118,7 @@ export function detectAnomalies(snapshot: SnapshotData): AnomalySignal[] {
 
   // ── Docker: Container not running (P1) ───────────────────────────────────
   for (const container of snapshot.docker.containers) {
+    if (!container.name) continue; // skip malformed entries from failed SSH
     if (container.status !== "running") {
       signals.push({
         source: "docker",

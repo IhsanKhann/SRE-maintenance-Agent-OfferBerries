@@ -16,17 +16,25 @@ interface BullMQMetrics {
 }
 
 let _redis: IORedis | null = null;
+let _lastErrorLog = 0;
 
 function getRedis(): IORedis {
   if (!_redis) {
     _redis = new IORedis(cfg.PROD_REDIS_URL, {
-      maxRetriesPerRequest: 3,
+      maxRetriesPerRequest: 1,
       enableReadyCheck: false,
       lazyConnect: true,
-      connectTimeout: 5000,
+      connectTimeout: 4000,
+      // Back off aggressively — Redis on Hetzner isn't reachable from Railway
+      retryStrategy: (times) => Math.min(times * 2000, 30000),
     });
-    _redis.on("error", (err: Error) => {
-      logger.warn("[Collector:BullMQ] Redis error", { error: err.message });
+    _redis.on("error", () => {
+      // Throttle: log at most once every 60 seconds to avoid log flooding
+      const now = Date.now();
+      if (now - _lastErrorLog > 60000) {
+        logger.warn("[Collector:BullMQ] Redis unreachable — BullMQ metrics unavailable");
+        _lastErrorLog = now;
+      }
     });
   }
   return _redis;
