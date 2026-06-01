@@ -66,7 +66,7 @@ export function Settings() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+      <div className="grid-2">
         {/* Agent Status */}
         <div className="card">
           <div className="card-header">
