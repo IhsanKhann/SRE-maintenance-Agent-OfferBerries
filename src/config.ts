@@ -19,6 +19,8 @@ const schema = z.object({
   PROD_SSH_HOST: z.string().default("localhost"),
   PROD_SSH_USER: z.string().default("deploy"),
   PROD_SSH_KEY_PATH: z.string().default("./ssh_deploy_key"),
+  // Raw PEM key content — Railway stores it as env var, agent writes it to /tmp
+  PROD_SSH_KEY: z.string().optional(),
 
   // SRE MongoDB
   MONGODB_SRE_URI: z.string().default("mongodb://localhost:27017/sre_agent"),

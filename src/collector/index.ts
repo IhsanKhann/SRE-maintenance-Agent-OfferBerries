@@ -81,7 +81,7 @@ export async function collectAll(): Promise<SnapshotData> {
 
   const elapsed = Date.now() - startMs;
   if (errors.length > 0) {
-    logger.warn("[Collector] Collection completed with errors", { errors, elapsedMs: elapsed });
+    logger.debug("[Collector] Snapshot collected with some failures", { failures: errors.length, elapsedMs: elapsed });
   } else {
     logger.debug("[Collector] Snapshot collected", { elapsedMs: elapsed });
   }

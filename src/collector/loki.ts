@@ -1,6 +1,7 @@
 import axios from "axios";
 import { cfg } from "../config.js";
 import { logger } from "../utils/logger.js";
+import { runRemoteCommand, sshConfigured } from "../utils/sshClient.js";
 
 interface LokiMetrics {
   errorLogCount5m: number;
@@ -32,30 +33,36 @@ async function queryLoki(
   end: string,
   limit = 100
 ): Promise<string[]> {
+  const params = new URLSearchParams({ query: logql, start, end, limit: String(limit) });
+  const url = `${cfg.PROD_LOKI_URL}/loki/api/v1/query_range?${params}`;
+
+  // Try direct HTTP first (works in dev or if Loki is publicly reachable)
   try {
-    const params = new URLSearchParams({
-      query: logql,
-      start,
-      end,
-      limit: String(limit),
-    });
-
-    const { data } = await axios.get(
-      `${cfg.PROD_LOKI_URL}/loki/api/v1/query_range?${params}`,
-      { timeout: 8000 }
-    );
-
-    const lines: string[] = [];
-    for (const stream of data?.data?.result ?? []) {
-      for (const [, line] of stream.values ?? []) {
-        lines.push(line as string);
-      }
+    const { data } = await axios.get(url, { timeout: 8000 });
+    return parseLokiResponse(data);
+  } catch {
+    // Fall back to SSH: curl Loki from inside the Hetzner network
+    if (!sshConfigured()) return [];
+    try {
+      const internalUrl = `http://localhost:3100/loki/api/v1/query_range?${params}`;
+      const raw = await runRemoteCommand(`curl -s '${internalUrl}'`);
+      if (!raw.trim()) return [];
+      return parseLokiResponse(JSON.parse(raw));
+    } catch (err: any) {
+      logger.warn("[Collector:Loki] Query failed", { logql, error: err.message });
+      return [];
     }
-    return lines;
-  } catch (err: any) {
-    logger.warn("[Collector:Loki] Query failed", { logql, error: err.message });
-    return [];
   }
+}
+
+function parseLokiResponse(data: any): string[] {
+  const lines: string[] = [];
+  for (const stream of data?.data?.result ?? []) {
+    for (const [, line] of stream.values ?? []) {
+      lines.push(line as string);
+    }
+  }
+  return lines;
 }
 
 export async function collectLoki(): Promise<LokiMetrics> {

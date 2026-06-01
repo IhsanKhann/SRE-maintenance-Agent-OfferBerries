@@ -64,14 +64,23 @@ export interface Incident {
   mttrSeconds: number | null;
 }
 
+export interface ContainerLogEntry {
+  container: string;
+  timestamp: string;
+  message: string;
+  stream: "stdout" | "stderr";
+}
+
 export function useSocket() {
   const socketRef = useRef<Socket | null>(null);
-  const [connected, setConnected]       = useState(false);
-  const [telemetry, setTelemetry]       = useState<TelemetrySnapshot | null>(null);
-  const [incidents, setIncidents]       = useState<Incident[]>([]);
-  const [agentLogs, setAgentLogs]       = useState<AgentLogEntry[]>([]);
-  const [actionResults, setActionResults] = useState<unknown[]>([]);
-  const [codePatch, setCodePatch]       = useState<unknown | null>(null);
+  const [connected, setConnected]             = useState(false);
+  const [telemetry, setTelemetry]             = useState<TelemetrySnapshot | null>(null);
+  const [incidents, setIncidents]             = useState<Incident[]>([]);
+  const [agentLogs, setAgentLogs]             = useState<AgentLogEntry[]>([]);
+  const [actionResults, setActionResults]     = useState<unknown[]>([]);
+  const [codePatch, setCodePatch]             = useState<unknown | null>(null);
+  const [containerList, setContainerList]     = useState<string[]>([]);
+  const [containerLogs, setContainerLogs]     = useState<Record<string, ContainerLogEntry[]>>({});
 
   // ── Hydrate existing data from REST on mount ──────────────────────────────
   useEffect(() => {
@@ -129,11 +138,29 @@ export function useSocket() {
       setCodePatch(patch);
     });
 
+    socket.on("containers:list", (list: string[]) => {
+      setContainerList(list);
+    });
+
+    socket.on("container:logs", (data: { container: string; logs: ContainerLogEntry[] }) => {
+      setContainerLogs((prev) => ({ ...prev, [data.container]: data.logs }));
+    });
+
+    // Request container list on connect
+    socket.on("connect", () => {
+      setConnected(true);
+      socket.emit("request:containers");
+    });
+
     return () => { socket.disconnect(); };
   }, []);
 
   const requestTelemetry = useCallback(() => {
     socketRef.current?.emit("request:telemetry");
+  }, []);
+
+  const requestContainerLogs = useCallback((container: string, lines = 100) => {
+    socketRef.current?.emit("request:containerlogs", { container, lines });
   }, []);
 
   // Optimistically refresh incidents from REST (e.g. after an action)
@@ -144,5 +171,9 @@ export function useSocket() {
     } catch { /* ignore */ }
   }, []);
 
-  return { connected, telemetry, incidents, agentLogs, actionResults, codePatch, requestTelemetry, refreshIncidents };
+  return {
+    connected, telemetry, incidents, agentLogs, actionResults, codePatch,
+    containerList, containerLogs,
+    requestTelemetry, refreshIncidents, requestContainerLogs,
+  };
 }

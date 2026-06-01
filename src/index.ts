@@ -1,5 +1,6 @@
 import "dotenv/config";
 import http from "http";
+import fs from "fs";
 import express from "express";
 import cors from "cors";
 
@@ -62,6 +63,15 @@ async function runCollectionCycle(): Promise<void> {
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 async function bootstrap(): Promise<void> {
+  // Write SSH private key from env var to a temp file so collectors can use it
+  if (cfg.PROD_SSH_KEY) {
+    const keyContent = cfg.PROD_SSH_KEY.replace(/\\n/g, "\n");
+    const keyPath = "/tmp/sre_deploy_key";
+    fs.writeFileSync(keyPath, keyContent, { mode: 0o600 });
+    process.env.PROD_SSH_KEY_PATH = keyPath;
+    logger.info("[Main] SSH key written from PROD_SSH_KEY env var");
+  }
+
   // Railway injects PORT; fall back to SRE_PORT for local/Hetzner deploys
   const bindPort = parseInt(process.env.PORT ?? String(cfg.SRE_PORT), 10);
 

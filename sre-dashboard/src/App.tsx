@@ -22,7 +22,8 @@ export default function App() {
   const [page, setPage] = useState<Page>("overview");
   const {
     connected, telemetry, incidents, agentLogs,
-    actionResults, codePatch, requestTelemetry, refreshIncidents,
+    actionResults, codePatch, containerList, containerLogs,
+    requestTelemetry, refreshIncidents, requestContainerLogs,
   } = useSocket();
 
   const openP1 = incidents.filter(
@@ -168,7 +169,15 @@ export default function App() {
 
         {page === "overview"  && <Overview telemetry={telemetry} incidents={incidents} connected={connected} />}
         {page === "incidents" && <Incidents incidents={incidents} onRefresh={refreshIncidents} />}
-        {page === "terminal"  && <Terminal logs={agentLogs} codePatch={codePatch} />}
+        {page === "terminal"  && (
+          <Terminal
+            logs={agentLogs}
+            codePatch={codePatch}
+            containerList={containerList}
+            containerLogs={containerLogs}
+            onRequestContainerLogs={requestContainerLogs}
+          />
+        )}
         {page === "settings"  && <Settings />}
         {page === "actions"   && <ActionsPage actionResults={actionResults} />}
       </main>

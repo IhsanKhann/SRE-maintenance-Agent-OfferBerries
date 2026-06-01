@@ -3,6 +3,7 @@ import { Server as SocketServer, type Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { cfg, corsOrigins } from "../config.js";
 import { logger } from "../utils/logger.js";
+import { fetchContainerLogs, listRunningContainers } from "../collector/containerLogs.js";
 
 let io: SocketServer | null = null;
 
@@ -49,6 +50,24 @@ export function initSRESocket(httpServer: HttpServer): SocketServer {
       });
     });
 
+    // Dashboard requests container list
+    socket.on("request:containers", async () => {
+      const containers = await listRunningContainers();
+      socket.emit("containers:list", containers);
+    });
+
+    // Dashboard requests logs for a specific container
+    socket.on("request:containerlogs", async (data: { container: string; lines?: number }) => {
+      if (!data?.container) return;
+      socket.emit("agent:log", {
+        timestamp: new Date().toISOString(),
+        message: `[Docker] Fetching last ${data.lines ?? 100} lines from ${data.container}…`,
+        level: "info",
+      });
+      const logs = await fetchContainerLogs(data.container, data.lines ?? 100);
+      socket.emit("container:logs", { container: data.container, logs });
+    });
+
     socket.on("action:execute", async (data: { toolName: string; params: Record<string, unknown> }) => {
       socket.emit("agent:log", {
         timestamp: new Date().toISOString(),
@@ -92,6 +111,10 @@ export function emitActionResult(result: object): void {
 
 export function emitCodePatch(patch: object): void {
   io?.to("sre-admins").emit("agent:codepatch", patch);
+}
+
+export function emitContainerLogs(container: string, logs: object[]): void {
+  io?.to("sre-admins").emit("container:logs", { container, logs });
 }
 
 export function getConnectedCount(): number {

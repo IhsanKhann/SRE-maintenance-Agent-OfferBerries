@@ -36,6 +36,13 @@ export function Incidents({ incidents, onRefresh }: Props) {
   const isActionable = (i: Incident) =>
     i.status === "open" || i.status === "investigating";
 
+  async function handleCloseAll() {
+    try {
+      await axios.post(`${SRE_URL}/api/incidents/close-stale`);
+      setTimeout(() => onRefresh?.(), 500);
+    } catch { /* ignore */ }
+  }
+
   async function handleAuthorize(incidentId: string, cmd: "FIX" | "IGNORE" | "ESCALATE") {
     setAuthorizing(incidentId + cmd);
     try {
@@ -63,6 +70,15 @@ export function Incidents({ incidents, onRefresh }: Props) {
           <div className="page-title">Incidents</div>
           <div className="page-subtitle">{filtered.length} of {incidents.length}</div>
         </div>
+        {incidents.filter(i => i.status === "open" || i.status === "investigating").length > 0 && (
+          <button
+            className="btn btn-ghost"
+            onClick={handleCloseAll}
+            style={{ fontSize: "0.75rem", color: "var(--ok-color)", borderColor: "rgba(16,185,129,0.3)", flexShrink: 0 }}
+          >
+            ✓ Resolve All
+          </button>
+        )}
       </div>
 
       {/* Filter pills */}

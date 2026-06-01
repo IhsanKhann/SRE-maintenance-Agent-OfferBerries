@@ -1,6 +1,6 @@
-import { NodeSSH } from "node-ssh";
 import { cfg } from "../config.js";
 import { logger } from "../utils/logger.js";
+import { runRemoteCommand } from "../utils/sshClient.js";
 import type { ContainerStat } from "../db/models/TelemetrySnapshot.js";
 
 interface DockerMetrics {
@@ -8,25 +8,11 @@ interface DockerMetrics {
   totalRestarts: number;
 }
 
-// SSH is only used in production. In dev mode we use the mock.
 async function runSSHCommand(command: string): Promise<string> {
   if (cfg.NODE_ENV !== "production") {
     return runLocalDockerCommand(command);
   }
-
-  const ssh = new NodeSSH();
-  try {
-    await ssh.connect({
-      host: cfg.PROD_SSH_HOST,
-      username: cfg.PROD_SSH_USER,
-      privateKeyPath: cfg.PROD_SSH_KEY_PATH,
-      readyTimeout: 5000,
-    });
-    const result = await ssh.execCommand(command);
-    return result.stdout;
-  } finally {
-    ssh.dispose();
-  }
+  return runRemoteCommand(command);
 }
 
 // Dev mode: run docker inspect locally (requires Docker Desktop or Docker Engine)

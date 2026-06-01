@@ -83,6 +83,15 @@ apiRouter.patch("/incidents/:id/close", auth, async (req, res) => {
   res.json({ success: true });
 });
 
+// Close all stale false-positive incidents (e.g. from before SSH/Hetzner was configured)
+apiRouter.post("/incidents/close-stale", auth, async (_req, res) => {
+  const result = await Incident.updateMany(
+    { status: { $in: ["open", "investigating"] } },
+    { status: "resolved", resolvedBy: "manual_bulk_close", closedAt: new Date() }
+  );
+  res.json({ success: true, closed: result.modifiedCount });
+});
+
 // Authorize a pending action from the dashboard (FIX / IGNORE / ESCALATE)
 apiRouter.post("/incidents/:id/authorize", auth, async (req, res) => {
   const { cmd } = req.body as { cmd: "FIX" | "IGNORE" | "ESCALATE" };

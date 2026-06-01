@@ -1,6 +1,7 @@
 import axios from "axios";
 import { cfg } from "../config.js";
 import { logger } from "../utils/logger.js";
+import { runRemoteCommand, sshConfigured } from "../utils/sshClient.js";
 
 interface PrometheusMetrics {
   httpRequestsTotal: number;
@@ -42,12 +43,25 @@ function computeErrorRate(raw: Record<string, number>): number {
   return total > 0 ? errors / total : 0;
 }
 
-export async function collectPrometheus(): Promise<PrometheusMetrics> {
+async function fetchMetricsText(): Promise<string> {
+  // Try direct HTTP first (works if /metrics is publicly exposed via nginx)
   try {
-    const { data: text } = await axios.get<string>(cfg.PROD_BACKEND_METRICS_URL, {
+    const { data } = await axios.get<string>(cfg.PROD_BACKEND_METRICS_URL, {
       timeout: 5000,
       headers: { Accept: "text/plain" },
     });
+    return data;
+  } catch {
+    // Fall back to SSH: curl backend container metrics from inside Hetzner
+    if (!sshConfigured()) throw new Error("Direct HTTP failed and SSH not configured");
+    // Backend-A exposes :5000/metrics on the Docker internal network
+    return runRemoteCommand(`curl -s http://localhost:5000/metrics`);
+  }
+}
+
+export async function collectPrometheus(): Promise<PrometheusMetrics> {
+  try {
+    const text = await fetchMetricsText();
 
     const raw = parsePrometheusText(text);
 
