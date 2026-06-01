@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+sre-dashboard/node_modules/
+
+# Build outputs
+dist/
+sre-dashboard/dist/
+
+# Environment — never commit secrets
+.env
+.env.local
+.env.*.local
+
+# SSH keys — never commit
+ssh_deploy_key
+*.pem
+*.key
+
+# TypeScript build
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+
+# Docker volumes
+mongo_data/
+redis_data/

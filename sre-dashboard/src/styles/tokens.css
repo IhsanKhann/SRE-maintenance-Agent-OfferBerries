@@ -1,0 +1,70 @@
+/* SRE Dashboard — Design Tokens
+   Mirrors OfferBerries ERP tokens.css for visual consistency.
+   Source: D:\Backend-offerB\frontend\src\styles\tokens.css
+*/
+
+:root {
+  /* ── Accent Colors (matches main ERP) ──────────────────────────────────── */
+  --hr-accent:     #6366f1;   /* indigo  */
+  --fin-accent:    #10b981;   /* emerald */
+  --ops-accent:    #f59e0b;   /* amber   */
+  --gov-accent:    #8b5cf6;   /* violet  */
+  --sre-accent:    #ef4444;   /* red — SRE-specific */
+  --sre-accent-dim: #7f1d1d;
+
+  /* ── Severity Colors ──────────────────────────────────────────────────── */
+  --p1-color:      #ef4444;
+  --p1-bg:         rgba(239, 68, 68, 0.1);
+  --p2-color:      #f59e0b;
+  --p2-bg:         rgba(245, 158, 11, 0.1);
+  --p3-color:      #6366f1;
+  --p3-bg:         rgba(99, 102, 241, 0.1);
+  --ok-color:      #10b981;
+  --ok-bg:         rgba(16, 185, 129, 0.1);
+
+  /* ── Background Layers (dark mode) ────────────────────────────────────── */
+  --bg-canvas:     #0a0a0f;
+  --bg-surface:    #111118;
+  --bg-elevated:   #1a1a24;
+  --bg-hover:      #22222f;
+
+  /* ── Text ─────────────────────────────────────────────────────────────── */
+  --text-primary:  #f1f1f5;
+  --text-secondary:#9ca3af;
+  --text-muted:    #6b7280;
+  --text-dim:      #374151;
+
+  /* ── Borders ──────────────────────────────────────────────────────────── */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default:rgba(255, 255, 255, 0.10);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  /* ── Status indicator dots ────────────────────────────────────────────── */
+  --dot-green:    #10b981;
+  --dot-red:      #ef4444;
+  --dot-yellow:   #f59e0b;
+  --dot-gray:     #6b7280;
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --font-mono:   "JetBrains Mono", "Fira Code", "Cascadia Code", ui-monospace, monospace;
+  --font-sans:   "Inter", system-ui, -apple-system, sans-serif;
+
+  /* ── Spacing ──────────────────────────────────────────────────────────── */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+
+  /* ── Radius ───────────────────────────────────────────────────────────── */
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-full: 9999px;
+
+  /* ── Transition ───────────────────────────────────────────────────────── */
+  --transition: 150ms ease;
+}

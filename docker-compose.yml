@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  sre-agent:
+    build: .
+    container_name: sre_agent
+    ports:
+      - "3500:3500"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./ssh_deploy_key:/root/.ssh/id_rsa:ro
+      - /var/run/docker.sock:/var/run/docker.sock   # Docker API access for container management
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3500/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # Dev-only: local MongoDB for testing
+  mongodb-sre:
+    image: mongo:7
+    container_name: sre_mongodb
+    ports:
+      - "27018:27017"   # Different port to avoid conflict with Backend-A
+    volumes:
+      - sre_mongo_data:/data/db
+    profiles:
+      - dev
+
+volumes:
+  sre_mongo_data:
