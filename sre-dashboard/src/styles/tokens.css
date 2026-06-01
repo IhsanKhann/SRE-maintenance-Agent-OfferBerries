@@ -136,6 +136,9 @@
   --z-sticky: 200; --z-overlay: 300; --z-modal: 400;
   --z-toast: 500; --z-tooltip: 600;
 
+  /* ── Elevated surfaces (cards within cards) ────────────── */
+  --bg-elevated:        #F8FAFC;
+
   /* ── SRE-specific extensions ────────────────────────────── */
   --sre-accent:         #ef4444;
   --sre-gradient:       linear-gradient(135deg, #ef4444, #dc2626);
@@ -190,6 +193,9 @@
   --text-placeholder:   #64748B;
   --text-link:          #f87171;
   --text-dim:           #374151;
+
+  /* ── Elevated surfaces (dark) ──────────────────────────── */
+  --bg-elevated:        #1E2535;
 
   /* ── Module Surfaces (dark) ─────────────────────────────── */
   --hr-bg: #1e1b4b; --hr-bg-hover: #2d2870; --hr-text: #A5B4FC; --hr-border: #3730A3;

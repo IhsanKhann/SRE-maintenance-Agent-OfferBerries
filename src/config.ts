@@ -8,7 +8,7 @@ if (process.env.NODE_ENV !== "test") {
 
 const schema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
-  SRE_PORT: z.coerce.number().default(3500),
+  SRE_PORT: z.coerce.number().default(parseInt(process.env.PORT ?? "3500", 10)),
   SRE_PUBLIC_URL: z.string().url().default("http://localhost:3500"),
 
   // Backend-A connection
@@ -59,8 +59,8 @@ const schema = z.object({
   THRESHOLD_DISK_PERCENT: z.coerce.number().default(85),
   THRESHOLD_MEMORY_PERCENT: z.coerce.number().default(85),
 
-  // CORS
-  SRE_CORS_ORIGINS: z.string().default("http://localhost:5174"),
+  // CORS — comma-separated list; include dashboard domain in production
+  SRE_CORS_ORIGINS: z.string().default("http://localhost:5174,http://localhost:5173"),
 });
 
 const parsed = schema.safeParse(process.env);
