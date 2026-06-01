@@ -1,3 +1,4 @@
+import { existsSync } from "fs";
 import { cfg } from "../config.js";
 import { logger } from "../utils/logger.js";
 import { runRemoteCommand } from "../utils/sshClient.js";
@@ -10,7 +11,6 @@ interface DockerMetrics {
 
 function hasDockerSocket(): boolean {
   try {
-    const { existsSync } = require("fs");
     return existsSync("/var/run/docker.sock");
   } catch {
     return false;
