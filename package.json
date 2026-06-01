@@ -16,19 +16,58 @@
     "test:watch": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --watch"
   },
   "imports": {
-    "#config": "./src/config.ts",
-    "#db/*": "./src/db/*.ts",
-    "#models/*": "./src/db/models/*.ts",
-    "#collector/*": "./src/collector/*.ts",
-    "#detector/*": "./src/detector/*.ts",
-    "#incident/*": "./src/incident/*.ts",
-    "#ai/*": "./src/ai/*.ts",
-    "#executor/*": "./src/executor/*.ts",
-    "#analytics/*": "./src/analytics/*.ts",
-    "#scheduler/*": "./src/scheduler/*.ts",
-    "#comms/*": "./src/comms/*.ts",
-    "#api/*": "./src/api/*.ts",
-    "#utils/*": "./src/utils/*.ts"
+    "#config": {
+      "ts-node": "./src/config.ts",
+      "default": "./dist/config.js"
+    },
+    "#db/*": {
+      "ts-node": "./src/db/*.ts",
+      "default": "./dist/db/*.js"
+    },
+    "#models/*": {
+      "ts-node": "./src/db/models/*.ts",
+      "default": "./dist/db/models/*.js"
+    },
+    "#collector/*": {
+      "ts-node": "./src/collector/*.ts",
+      "default": "./dist/collector/*.js"
+    },
+    "#detector/*": {
+      "ts-node": "./src/detector/*.ts",
+      "default": "./dist/detector/*.js"
+    },
+    "#incident/*": {
+      "ts-node": "./src/incident/*.ts",
+      "default": "./dist/incident/*.js"
+    },
+    "#ai/*": {
+      "ts-node": "./src/ai/*.ts",
+      "default": "./dist/ai/*.js"
+    },
+    "#executor/*": {
+      "ts-node": "./src/executor/*.ts",
+      "default": "./dist/executor/*.js"
+    },
+    "#analytics/*": {
+      "ts-node": "./src/analytics/*.ts",
+      "default": "./dist/analytics/*.js"
+    },
+    "#scheduler/*": {
+      "ts-node": "./src/scheduler/*.ts",
+      "default": "./dist/scheduler/*.js"
+    },
+    "#comms/*": {
+      "ts-node": "./src/comms/*.ts",
+      "default": "./dist/comms/*.js"
+    },
+    "#api/*": {
+      "ts-node": "./src/api/*.ts",
+      "default": "./dist/api/*.js"
+    },
+    "#utils/*": {
+      "ts-node": "./src/utils/*.ts",
+      "default": "./dist/utils/*.js"
+    }
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
