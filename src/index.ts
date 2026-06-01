@@ -61,13 +61,27 @@ async function runCollectionCycle(): Promise<void> {
   }
 }
 
+// Handles keys pasted as a single line with spaces (Railway UI strips newlines)
+function normalizeSSHKey(raw: string): string {
+  let key = raw.replace(/\\n/g, "\n").trim();
+  if (key.includes("\n")) return key.endsWith("\n") ? key : key + "\n";
+
+  // Single-line with spaces: -----BEGIN ...KEY----- <b64> -----END ...KEY-----
+  const begin = key.match(/(-----BEGIN [^-]+ KEY-----)/)?.[1];
+  const end   = key.match(/(-----END [^-]+ KEY-----)/)?.[1];
+  if (!begin || !end) return key;
+
+  const inner = key.slice(key.indexOf(begin) + begin.length, key.lastIndexOf(end)).replace(/\s+/g, "");
+  const lines = inner.match(/.{1,70}/g) ?? [];
+  return `${begin}\n${lines.join("\n")}\n${end}\n`;
+}
+
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 async function bootstrap(): Promise<void> {
   // Write SSH private key from env var to a temp file so collectors can use it
   if (cfg.PROD_SSH_KEY) {
-    const keyContent = cfg.PROD_SSH_KEY.replace(/\\n/g, "\n");
     const keyPath = "/tmp/sre_deploy_key";
-    fs.writeFileSync(keyPath, keyContent, { mode: 0o600 });
+    fs.writeFileSync(keyPath, normalizeSSHKey(cfg.PROD_SSH_KEY), { mode: 0o600 });
     process.env.PROD_SSH_KEY_PATH = keyPath;
     logger.info("[Main] SSH key written from PROD_SSH_KEY env var");
   }
