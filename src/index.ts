@@ -62,35 +62,42 @@ async function runCollectionCycle(): Promise<void> {
 
 // ── Bootstrap ─────────────────────────────────────────────────────────────────
 async function bootstrap(): Promise<void> {
+  // Railway injects PORT; fall back to SRE_PORT for local/Hetzner deploys
+  const bindPort = parseInt(process.env.PORT ?? String(cfg.SRE_PORT), 10);
+
   logger.info("[Main] Starting SRE Agent Daemon", {
     version: "1.0.0",
     env: cfg.NODE_ENV,
-    port: cfg.SRE_PORT,
+    port: bindPort,
   });
 
-  // 1. Connect to SRE database
-  await connectSREDatabase();
-
-  // 2. Create HTTP server + Socket.io
+  // 1. Start HTTP server immediately so /ping is reachable before DB connects.
+  //    Railway's healthcheck fires within 30s — DB + collectors must not block it.
   const httpServer = http.createServer(app);
   initSRESocket(httpServer);
+
+  await new Promise<void>((resolve) => {
+    httpServer.listen(bindPort, "0.0.0.0", () => {
+      logger.info("[Main] SRE Agent listening", {
+        port: bindPort,
+        collecting: `every ${cfg.COLLECT_INTERVAL_MS / 1000}s`,
+      });
+      resolve();
+    });
+  });
+
+  // 2. Connect to MongoDB — retry-safe: if this fails, log and keep retrying
+  //    in the background; the HTTP server stays up so healthcheck passes.
+  connectSREDatabase().catch((err) => {
+    logger.error("[Main] DB connect failed — will retry on next operation", { error: err.message });
+  });
 
   // 3. Start cron jobs
   startCronJobs();
 
-  // 4. Start the collection loop
-  // Run first collection immediately, then on interval
-  await runCollectionCycle();
+  // 4. Start the collection loop (non-blocking — failures are caught inside)
+  runCollectionCycle().catch(() => {});
   collectTimer = setInterval(runCollectionCycle, cfg.COLLECT_INTERVAL_MS);
-
-  // 5. Start listening
-  httpServer.listen(cfg.SRE_PORT, "0.0.0.0", () => {
-    logger.info("[Main] SRE Agent listening", {
-      port: cfg.SRE_PORT,
-      dashboard: `http://localhost:${cfg.SRE_PORT}`,
-      collecting: `every ${cfg.COLLECT_INTERVAL_MS / 1000}s`,
-    });
-  });
 
   // ── Graceful shutdown ─────────────────────────────────────────────────────
   const shutdown = async (signal: string) => {

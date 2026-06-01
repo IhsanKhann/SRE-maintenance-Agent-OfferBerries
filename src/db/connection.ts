@@ -10,8 +10,9 @@ export async function connectSREDatabase(): Promise<void> {
   try {
     await mongoose.connect(cfg.MONGODB_SRE_URI, {
       dbName: "sre_agent",
-      serverSelectionTimeoutMS: 10000,
+      serverSelectionTimeoutMS: 15000,
       socketTimeoutMS: 45000,
+      retryWrites: true,
     });
     isConnected = true;
     logger.info("[DB] SRE Agent database connected", { uri: cfg.MONGODB_SRE_URI.split("@").pop() });
