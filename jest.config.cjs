@@ -18,6 +18,7 @@ module.exports = {
     '^#scheduler/(.*)$': '<rootDir>/src/scheduler/$1.ts',
     '^#comms/(.*)$': '<rootDir>/src/comms/$1.ts',
     '^#api/(.*)$': '<rootDir>/src/api/$1.ts',
+    '^#utils/(.*)$': '<rootDir>/src/utils/$1.ts',
   },
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {

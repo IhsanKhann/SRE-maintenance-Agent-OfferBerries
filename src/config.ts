@@ -59,6 +59,12 @@ const schema = z.object({
   THRESHOLD_DISK_PERCENT: z.coerce.number().default(85),
   THRESHOLD_MEMORY_PERCENT: z.coerce.number().default(85),
 
+  // B2B shared key — SRE Agent ↔ Backend-A (same model as PHP_PARTNER_API_KEY)
+  SRE_INTERNAL_KEY: z.string().min(16).optional(),
+
+  // Set to "true" to require JWT Bearer tokens on the dashboard API/socket
+  SRE_AUTH_REQUIRED: z.string().default("false"),
+
   // CORS — comma-separated list; include dashboard domain in production
   SRE_CORS_ORIGINS: z.string().default("http://localhost:5174,http://localhost:5173"),
 });
@@ -77,6 +83,9 @@ export const isDev = cfg.NODE_ENV === "development";
 export const isTest = cfg.NODE_ENV === "test";
 
 export const corsOrigins = cfg.SRE_CORS_ORIGINS.split(",").map((s) => s.trim());
+
+export const hasSREInternalKey = Boolean(cfg.SRE_INTERNAL_KEY);
+export const isDashboardAuthRequired = cfg.SRE_AUTH_REQUIRED === "true";
 
 export const hasAI = Boolean(cfg.GROQ_API_KEY);
 export const hasPatchModel = Boolean(cfg.GOOGLE_AI_KEY ?? cfg.ANTHROPIC_API_KEY);

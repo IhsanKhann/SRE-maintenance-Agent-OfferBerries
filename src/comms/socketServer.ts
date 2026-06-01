@@ -16,12 +16,15 @@ export function initSRESocket(httpServer: HttpServer): SocketServer {
   });
 
   io.use((socket: Socket, next) => {
-    const token = socket.handshake.auth?.token as string | undefined;
-    if (!token) {
-      // In dev mode allow unauthenticated connections
-      if (cfg.NODE_ENV === "development") return next();
-      return next(new Error("Unauthorized: token required"));
+    // Auth is only enforced when SRE_AUTH_REQUIRED=true.
+    // When disabled, the dashboard connects without a token.
+    if (cfg.SRE_AUTH_REQUIRED !== "true") {
+      socket.data.userId = "dashboard";
+      return next();
     }
+
+    const token = socket.handshake.auth?.token as string | undefined;
+    if (!token) return next(new Error("Unauthorized: token required"));
 
     try {
       const payload = jwt.verify(token, cfg.JWT_SECRET) as Record<string, unknown>;

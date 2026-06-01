@@ -11,12 +11,15 @@ import { executeScript } from "../executor/scriptExecutor.js";
 import { emitActionResult, getConnectedCount } from "../comms/socketServer.js";
 import { buildAndSendWeeklyReport } from "../analytics/reportBuilder.js";
 import { EmailSession } from "../db/models/EmailSession.js";
+import { ingestRouter } from "./ingestRouter.js";
 
 export const apiRouter: Router = express.Router();
 
 // ── Auth middleware ───────────────────────────────────────────────────────────
+// Dashboard auth is optional — only enforced when SRE_AUTH_REQUIRED=true.
+// B2B calls from Backend-A use the ingest router which has its own b2bAuthMiddleware.
 function auth(req: Request, res: Response, next: express.NextFunction): void {
-  if (cfg.NODE_ENV !== "production") return next(); // Open in dev
+  if (cfg.SRE_AUTH_REQUIRED !== "true") return next();
 
   const header = req.headers.authorization ?? "";
   const token = header.startsWith("Bearer ") ? header.slice(7) : null;
@@ -29,6 +32,9 @@ function auth(req: Request, res: Response, next: express.NextFunction): void {
     res.status(401).json({ error: "Invalid token" });
   }
 }
+
+// ── B2B Ingest (Backend-A → SRE Agent) ────────────────────────────────────────
+apiRouter.use("/ingest", ingestRouter);
 
 // ── Health ────────────────────────────────────────────────────────────────────
 apiRouter.get("/health", (_req, res) => {

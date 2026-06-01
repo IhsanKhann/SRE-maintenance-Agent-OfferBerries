@@ -1,4 +1,4 @@
-import IORedis from "ioredis";
+import { Redis as IORedis } from "ioredis";
 import { cfg } from "../config.js";
 import { logger } from "../utils/logger.js";
 
@@ -25,7 +25,7 @@ function getRedis(): IORedis {
       lazyConnect: true,
       connectTimeout: 5000,
     });
-    _redis.on("error", (err) => {
+    _redis.on("error", (err: Error) => {
       logger.warn("[Collector:BullMQ] Redis error", { error: err.message });
     });
   }

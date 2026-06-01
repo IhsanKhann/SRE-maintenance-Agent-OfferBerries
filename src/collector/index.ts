@@ -3,6 +3,7 @@ import { collectLoki } from "./loki.js";
 import { collectDocker } from "./docker.js";
 import { collectBullMQ, collectRedisStats } from "./bullmq.js";
 import { collectBackendBSync } from "./backendBSync.js";
+import type { Document } from "mongoose";
 import { TelemetrySnapshot, type ITelemetrySnapshot } from "../db/models/TelemetrySnapshot.js";
 import { emitTelemetryUpdate } from "../comms/socketServer.js";
 import { logger } from "../utils/logger.js";
